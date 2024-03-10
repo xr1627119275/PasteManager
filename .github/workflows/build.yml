@@ -2,7 +2,8 @@ name: Auto Build .NET Core App
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - 'v*.*.*'
 
 #jobs:
 #  build:
@@ -77,10 +78,18 @@ jobs:
 
       - name: copy to release
         working-directory: web-vue
-        run: xcopy.exe dist ..\Project2\bin\Release\ /s/y
+        run: xcopy.exe dist ..\Project2\bin\Release\dist /s/y
       
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1.0.0
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v1.0.0
+#        with:
+#          name: app
+#          path: Project2\bin\Release\
+          
+      - name: release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: app
-          path: Project2\bin\Release\
+          files: "Project2\bin\Release\**"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
