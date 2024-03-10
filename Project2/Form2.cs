@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -28,6 +29,8 @@ namespace Project2
         {
             InitializeComponent();
             this.Icon = null;
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            Console.WriteLine(version);
             //Control.CheckForIllegalCrossThreadCalls = false;
             //Turn the child window into a message-only window (refer to Microsoft docs)
             NativeMethods.SetParent(Handle, NativeMethods.HWND_MESSAGE);
@@ -113,10 +116,15 @@ namespace Project2
             else if (Clipboard.ContainsFileDropList())
             {
                 var fileList = Clipboard.GetFileDropList();
+                if (fileList == null || fileList.Count == 0) return;
                 var files = new string[fileList.Count];
                 fileList.CopyTo(files, 0);
                 Console.WriteLine("fileList");
                 var currFiles = String.Join("#", files);
+                if (currFiles.Length == 0)
+                {
+                    return;
+                }
                 if (last.Content.Equals(currFiles)) return;
                 LiteSqlManage.instance.addData(new PasteInfo()
                 { Title = "文件", Content = currFiles, Type = DataFormats.FileDrop });
