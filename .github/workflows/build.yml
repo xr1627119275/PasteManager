@@ -3,7 +3,7 @@ name: Auto Build .NET Core App
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*'
 
 #jobs:
 #  build:
