@@ -117,27 +117,24 @@ jobs:
 
   mutation:
     needs: [win-build, web-build] 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - run: choco install zip unzip -y
-      
+      - run: apt install zip -y
       - uses: actions/download-artifact@v2
         with:
           name: dist.zip
-          
       - uses: actions/download-artifact@v2
         with:
           name: Release.zip
           
       - run: unzip dist.zip
       - run: unzip Release.zip
-          
-      - name: copy to release
+      
+      - name: concat Files
+        run: cp -rf ../dist .
         working-directory: Release
-        run: xcopy.exe ..\dist .\dist /s/y
-        
-      - run: zip -r PasteManager.zip Release/**
+      
+      - run: mv Release PasteManager && zip -r PasteManager.zip PasteManager
       - name: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
