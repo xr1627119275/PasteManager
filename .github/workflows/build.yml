@@ -29,14 +29,12 @@ on:
 #          path: publish-win-x64/
 #          
 jobs:
-  build:
-
+  web-build:
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v1
         name: Checkout Code
-        
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -46,8 +44,28 @@ jobs:
         with:
           version: 8
           run_install: false
-      - name: Install dependencies
-        run: cd web-vue ; pnpm install; pnpm build
+        run: pnpm install; pnpm build
+        working-directory: web-vue
+      
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r dist.zip dist
+        working-directory: web-vue
+        
+      - uses: actions/upload-artifact@v2
+        name: upload web
+        with:
+          name: dist.zip
+          path: web-vue
+          
+  win-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+        name: Checkout Code
+        
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
@@ -60,7 +78,19 @@ jobs:
       - name: Build and Publish Web App
         run: msbuild Project2.sln /p:Configuration=Release 
 
-      
+      - name: Install zip
+        uses: montudor/action-zip@v1
+
+      - name: Zip output
+        run: zip -qq -r Release.zip Release
+        working-directory: Project2\bin
+        
+      - uses: actions/upload-artifact@v2
+        name: upload web
+        with:
+          name: Release.zip
+          path: Project2\bin
+          
 #      - name: Get pnpm store directory
 #        shell: bash
 #        run: |
@@ -73,23 +103,58 @@ jobs:
 #          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 #          restore-keys: |
 #            ${{ runner.os }}-pnpm-store-
-
-      
-
-      - name: copy to release
-        working-directory: web-vue
-        run: xcopy.exe dist ..\Project2\bin\Release\dist\ /s/y
-      
+#      - name: copy to release
+#        working-directory: web-vue
+#        run: xcopy.exe dist ..\Project2\bin\Release\dist\ /s/y
+        
 #      - name: Upload Artifact
 #        uses: actions/upload-artifact@v1.0.0
 #        with:
 #          name: app
 #          path: Project2\bin\Release\
+#      - name: release
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: Project2\bin\app.zip
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  mutation:
+    needs: [win-build, web-build] 
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install zip
+        uses: montudor/action-zip@v1
+        
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist.zip
           
+      - uses: actions/download-artifact@v2
+        with:
+          name: Release.zip
+          
+      - uses: montudor/action-zip@v1
+        with:
+          args: unzip -qq dist -d dist
+      - uses: montudor/action-zip@v1
+        with:
+          args: unzip -qq Release -d Release
+          
+      - name: copy to release
+        working-directory: Release
+        run: xcopy.exe ..\dist .\dist /s/y
+        
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r PasteManager.zip Release
       - name: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: Project2\bin\Release\**
+          files: PasteManager.zip
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        
