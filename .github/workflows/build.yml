@@ -4,25 +4,52 @@ on:
   push:
     branches: [ main ]
 
+#jobs:
+#  build:
+#    runs-on: windows-latest
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Setup .NET Core
+#        uses: actions/setup-dotnet@v1
+#        with:
+#          dotnet-version: 3.1.x
+#
+#      - name: Publish with dotnet
+#        run: dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:PublishTrimmed=true
+#        env:
+#          DOTNET_USE_POLLING_FILE_WATCHER: 'true'
+#
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: publish-win-x64
+#          path: publish-win-x64/
+#          
 jobs:
   build:
+
     runs-on: windows-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v1
+        name: Checkout Code
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1.x
+      - name: Setup MSBuild Path
+        uses: warrenbuckley/Setup-MSBuild@v1
 
-      - name: Publish with dotnet
-        run: dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:PublishTrimmed=true
-        env:
-          DOTNET_USE_POLLING_FILE_WATCHER: 'true'
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+
+      - name: Restore NuGet Packages
+        run: nuget restore SimpleFrameworkApp.sln
+
+      - name: Build and Publish Web App
+        run: msbuild Project2.sln /p:Configuration=Release 
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v1.0.0
         with:
-          name: publish-win-x64
-          path: publish-win-x64/
+          name: published_webapp
+          path: bin\Release\
