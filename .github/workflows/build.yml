@@ -76,7 +76,8 @@ jobs:
       
 
       - name: copy to release
-        run: xcopy.exe dist ..\..\Project2\bin\Release\ /s/y
+        working-directory: web-vue
+        run: xcopy.exe dist ..\Project2\bin\Release\ /s/y
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v1.0.0
