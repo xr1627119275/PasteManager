@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  width: 100vw;
+  overflow-x: hidden;
+}
+body {
+  margin: 0;
+  width: 100vw;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+
+#app {
+  margin: 0 auto;
+  width: 100vw;
+  text-align: center;
+}
