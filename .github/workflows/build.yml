@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         name: Checkout Code
-
+      - run: choco install zip unzip -y
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -48,11 +48,8 @@ jobs:
         run: pnpm install; pnpm build
         working-directory: web-vue
       
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
       - name: Zip output
-        run: zip -qq -r dist.zip dist
+        run: zip -r dist.zip dist
         working-directory: web-vue
         
       - uses: actions/upload-artifact@v2
@@ -66,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         name: Checkout Code
-        
+      - run: choco install zip unzip -y  
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
@@ -79,11 +76,8 @@ jobs:
       - name: Build and Publish Web App
         run: msbuild Project2.sln /p:Configuration=Release 
 
-      - name: Install zip
-        uses: montudor/action-zip@v1
-
       - name: Zip output
-        run: zip -qq -r Release.zip Release
+        run: zip -r Release.zip Release
         working-directory: Project2\bin
         
       - uses: actions/upload-artifact@v2
@@ -126,9 +120,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Install zip
-        uses: montudor/action-zip@v1
-        
+      - run: choco install zip unzip -y
+      
       - uses: actions/download-artifact@v2
         with:
           name: dist.zip
@@ -137,20 +130,14 @@ jobs:
         with:
           name: Release.zip
           
-      - uses: montudor/action-zip@v1
-        with:
-          args: unzip -qq dist -d dist
-      - uses: montudor/action-zip@v1
-        with:
-          args: unzip -qq Release -d Release
+      - run: unzip dist.zip
+      - run: unzip Release.zip
           
       - name: copy to release
         working-directory: Release
         run: xcopy.exe ..\dist .\dist /s/y
         
-      - uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r PasteManager.zip Release
+      - run: zip -r PasteManager.zip Release/**
       - name: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
