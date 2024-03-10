@@ -48,6 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="AssemblyInfo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
+    </Compile>
     <Compile Include="Bridge.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
@@ -206,6 +211,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AssemblyInfo.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
@@ -216,6 +225,9 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2415-prerelease\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2415-prerelease\build\Microsoft.Web.WebView2.targets')" />
