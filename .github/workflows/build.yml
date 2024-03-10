@@ -56,7 +56,7 @@ jobs:
         name: upload web
         with:
           name: dist.zip
-          path: web-vue
+          path: web-vue\dist.zip
           
   win-build:
     runs-on: windows-latest
@@ -84,7 +84,7 @@ jobs:
         name: upload web
         with:
           name: Release.zip
-          path: Project2\bin
+          path: Project2\bin\Release.zip
           
 #      - name: Get pnpm store directory
 #        shell: bash
