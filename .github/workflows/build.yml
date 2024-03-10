@@ -36,14 +36,14 @@ jobs:
       - uses: actions/checkout@v1
         name: Checkout Code
 
-      - name: Setup MSBuild Path
-        uses: warrenbuckley/Setup-MSBuild@v1
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.2
 
       - name: Restore NuGet Packages
-        run: nuget restore SimpleFrameworkApp.sln
+        run: nuget restore Project2.sln
 
       - name: Build and Publish Web App
         run: msbuild Project2.sln /p:Configuration=Release 
@@ -51,5 +51,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1.0.0
         with:
-          name: published_webapp
+          name: app
           path: bin\Release\
