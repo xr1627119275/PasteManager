@@ -1,0 +1,28 @@
+name: Auto Build .NET Core App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+
+      - name: Publish with dotnet
+        run: dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:PublishTrimmed=true
+        env:
+          DOTNET_USE_POLLING_FILE_WATCHER: 'true'
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: publish-win-x64
+          path: publish-win-x64/
