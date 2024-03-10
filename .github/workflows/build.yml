@@ -35,7 +35,18 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         name: Checkout Code
-
+        
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.0
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+      - name: Install dependencies
+        run: cd web-vue ; pnpm install; pnpm build
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
@@ -48,15 +59,7 @@ jobs:
       - name: Build and Publish Web App
         run: msbuild Project2.sln /p:Configuration=Release 
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
+      
 #      - name: Get pnpm store directory
 #        shell: bash
 #        run: |
@@ -70,8 +73,7 @@ jobs:
 #          restore-keys: |
 #            ${{ runner.os }}-pnpm-store-
 
-      - name: Install dependencies
-        run: cd web-vue ; pnpm install; pnpm build
+      
 
       - name: copy to release
         run: xcopy.exe dist ..\..\Project2\bin\Release\ /s/y
