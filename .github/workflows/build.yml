@@ -2,7 +2,7 @@ name: Auto Build .NET Core App
 
 on:
   push:
-    branches: [ master1 ]
+    branches: [ main ]
 
 jobs:
   build:
