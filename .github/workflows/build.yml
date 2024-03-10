@@ -71,7 +71,7 @@ jobs:
 #            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: cd web ; pnpm install; pnpm build
+        run: cd web-vue ; pnpm install; pnpm build
 
       - name: copy to release
         run: xcopy.exe dist ..\..\Project2\bin\Release\ /s/y
