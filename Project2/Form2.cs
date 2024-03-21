@@ -88,47 +88,47 @@ namespace Project2
         {
             IDataObject iData = Clipboard.GetDataObject();
             var last = LiteSqlManage.instance.getLastOne();
-            if (iData.GetDataPresent(DataFormats.Text))
-            {
-                var text = (string)iData.GetData(DataFormats.Text);
-                if (last.Title.Equals(text)) return;
-                Console.WriteLine("text");
-                Console.WriteLine("[" + text.Trim() + "]");
-                if (text.Trim().Length > 0)
+           
+                if (iData.GetDataPresent(DataFormats.Text))
                 {
-                    LiteSqlManage.instance.addData(new PasteInfo() { Title = text, Content = text, Type = DataFormats.Text });
+                    var text = (string)iData.GetData(DataFormats.Text);
+                    if (last.Title.Equals(text)) return;
+                    Console.WriteLine("text");
+                    if (text != null && text.Trim().Length > 0)
+                    {
+                        LiteSqlManage.instance.addData(new PasteInfo() { Title = text, Content = text, Type = DataFormats.Text });
+                    }
                 }
-            }
-            else if (Clipboard.ContainsImage())
-            {
-                Image img = Clipboard.GetImage();
-                Console.WriteLine("img");
-                Console.WriteLine(img);
-                if (img != null)
+                else if (Clipboard.ContainsImage())
                 {
-                    var currImage = ImageToByte(img);
-                    if (last.Image != null && currImage.Length == last.Image.Length) return;
+                    Image img = Clipboard.GetImage();
+                    Console.WriteLine("img");
+                    Console.WriteLine(img);
+                    if (img != null)
+                    {
+                        var currImage = ImageToByte(img);
+                        if (last.Image != null && currImage.Length == last.Image.Length) return;
+                        LiteSqlManage.instance.addData(new PasteInfo()
+                        { Title = "图片", Image = currImage, Type = DataFormats.Bitmap });
+                    }
+
+                }
+                else if (Clipboard.ContainsFileDropList())
+                {
+                    var fileList = Clipboard.GetFileDropList();
+                    if (fileList == null || fileList.Count == 0) return;
+                    var files = new string[fileList.Count];
+                    fileList.CopyTo(files, 0);
+                    Console.WriteLine("fileList");
+                    var currFiles = String.Join("#", files);
+                    if (currFiles.Length == 0)
+                    {
+                        return;
+                    }
+                    if (last.Content.Equals(currFiles)) return;
                     LiteSqlManage.instance.addData(new PasteInfo()
-                    { Title = "图片", Image = currImage, Type = DataFormats.Bitmap });
+                    { Title = "文件", Content = currFiles, Type = DataFormats.FileDrop });
                 }
-                    
-            }
-            else if (Clipboard.ContainsFileDropList())
-            {
-                var fileList = Clipboard.GetFileDropList();
-                if (fileList == null || fileList.Count == 0) return;
-                var files = new string[fileList.Count];
-                fileList.CopyTo(files, 0);
-                Console.WriteLine("fileList");
-                var currFiles = String.Join("#", files);
-                if (currFiles.Length == 0)
-                {
-                    return;
-                }
-                if (last.Content.Equals(currFiles)) return;
-                LiteSqlManage.instance.addData(new PasteInfo()
-                { Title = "文件", Content = currFiles, Type = DataFormats.FileDrop });
-            }
 
         }
         private static byte[] ImageToByte(Image Picture)
@@ -147,8 +147,10 @@ namespace Project2
             if (m.Msg == NativeMethods.WM_CLIPBOARDUPDATE)
             {
                 Console.WriteLine("CLIPBOARD_CHANGE");
+                
                 if (!NativeMethods.lockPaste) DisplayClipboardData();
                 mainForm.webView.ExecuteScriptAsync("window.getData()");
+                  
             }
             //Called for any unhandled messages
             base.WndProc(ref m);
