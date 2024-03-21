@@ -32,17 +32,17 @@ interface PasteInfo {
   Type: "Text" | "Bitmap" | "FileDrop" ,
   TimeStr: string
 }
-async function handleClick() {
+async function loadData() {
   console.log('click', bridge)
-  const res =await bridge.getList(0, 100)
+  const res =await bridge.getList(0, 100) 
   const lists: Array<PasteInfo> = JSON.parse(res)
   console.log(lists)
   data.list = lists
-  if (curr.value === 0) curr.value = lists[0].Id
+  curr.value = lists[0].Id
 }
-window.getData = () => handleClick()
+window.getData = () => loadData()
 
-handleClick()
+loadData()
 const curr = ref(0)
 document.querySelector("body")?.addEventListener("keydown", async function(event) {
 
